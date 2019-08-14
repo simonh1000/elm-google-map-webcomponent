@@ -1,3 +1,11 @@
+```jshelllanguage
+npm install
+npm run dev
+```
+
+open localhost:3000
+
+
 ```
 npm i @em-polymer/google-map
 
