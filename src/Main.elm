@@ -1,11 +1,13 @@
 port module Main exposing (Model, Msg(..), init, main, toJs, update, view)
 
 import Browser
+import Browser.Navigation exposing (Key)
 import Html exposing (..)
-import Html.Attributes exposing (..)
+import Html.Attributes as Attribute exposing (..)
 import Html.Events exposing (onClick)
 import Http exposing (Error(..))
 import Json.Decode as Decode
+import Url exposing (Url)
 
 
 
@@ -24,12 +26,19 @@ port toJs : String -> Cmd msg
 
 
 type alias Model =
-    ()
+    { key : Key
+    , message : String
+    }
 
 
-init : Int -> ( Model, Cmd Msg )
-init flags =
-    ( (), Cmd.none )
+blankModel : Key -> Model
+blankModel key =
+    { key = key, message = "init" }
+
+
+init : flags -> Url -> Key -> ( Model, Cmd Msg )
+init _ _ key =
+    ( blankModel key, Cmd.none )
 
 
 
@@ -39,12 +48,16 @@ init flags =
 
 
 type Msg
-    = NoOp
+    = Click
+    | NoOp
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update message model =
     case message of
+        Click ->
+            ( { model | message = "clicked" }, Cmd.none )
+
         NoOp ->
             ( model, Cmd.none )
 
@@ -55,11 +68,21 @@ update message model =
 -- ---------------------------
 
 
-view : Model -> Html Msg
+view : Model -> List (Html Msg)
 view model =
-    div []
-        [ text "todo"
+    [ div [ class "button" ] [ button [ onClick Click ] [ text "Click me" ] ]
+    , div [ class "message" ] [ text model.message ]
+    , gmap
+    ]
+
+
+gmap =
+    Html.node "google-map"
+        [ Attribute.attribute "api-key" "AIzaSyDPGdhFftpVU-QW4ihbXi6IuLw1DUriYJ0"
+        , Attribute.attribute "latitude" "52"
+        , Attribute.attribute "longitude" "5"
         ]
+        []
 
 
 
@@ -70,13 +93,15 @@ view model =
 
 main : Program Int Model Msg
 main =
-    Browser.document
+    Browser.application
         { init = init
         , update = update
         , view =
             \m ->
                 { title = "Elm 0.19 starter"
-                , body = [ view m ]
+                , body = view m
                 }
         , subscriptions = \_ -> Sub.none
+        , onUrlChange = \_ -> NoOp
+        , onUrlRequest = \_ -> NoOp
         }
