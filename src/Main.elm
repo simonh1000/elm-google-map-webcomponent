@@ -74,8 +74,8 @@ type alias MapBounds =
     }
 
 
-decodeEventDetails : Decoder MapBounds
-decodeEventDetails =
+decodeMapBounds : Decoder MapBounds
+decodeMapBounds =
     Decode.map4 MapBounds
         (Decode.field "north" Decode.float)
         (Decode.field "east" Decode.float)
@@ -102,7 +102,7 @@ gmap model =
         , Attribute.attribute "latitude" <| String.fromFloat model.center.lat
         , Attribute.attribute "longitude" <| String.fromFloat model.center.lng
         , Attribute.attribute "drag-events" "true"
-        , Events.on "google-map-dragend" (Decode.at [ "detail", "bounds" ] decodeEventDetails |> Decode.map OnDragEnd)
+        , Events.on "google-map-dragend" (Decode.at [ "detail", "bounds" ] decodeMapBounds |> Decode.map OnDragEnd)
         ]
         [ gmarker model.center ]
 
