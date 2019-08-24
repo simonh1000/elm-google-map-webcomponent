@@ -1,13 +1,11 @@
 port module Main exposing (Model, Msg(..), init, main, toJs, update, view)
 
 import Browser
-import Browser.Navigation exposing (Key)
 import Html exposing (..)
 import Html.Attributes as Attribute exposing (..)
-import Html.Events exposing (onClick)
-import Http exposing (Error(..))
-import Json.Decode as Decode
-import Url exposing (Url)
+import Html.Events as Events
+import Json.Decode as Decode exposing (Decoder, Value)
+import Json.Encode as Encode
 
 
 
@@ -26,19 +24,25 @@ port toJs : String -> Cmd msg
 
 
 type alias Model =
-    { key : Key
-    , message : String
+    { gkey : String
+    , center : LatLng
     }
 
 
-blankModel : Key -> Model
-blankModel key =
-    { key = key, message = "init" }
+blankModel : String -> Model
+blankModel gkey =
+    { gkey = gkey
+    , center = LatLng 39.4 -0.41
+    }
 
 
-init : flags -> Url -> Key -> ( Model, Cmd Msg )
-init _ _ key =
-    ( blankModel key, Cmd.none )
+init : String -> ( Model, Cmd Msg )
+init gkey =
+    ( blankModel gkey, Cmd.none )
+
+
+type alias LatLng =
+    { lat : Float, lng : Float }
 
 
 
@@ -48,18 +52,35 @@ init _ _ key =
 
 
 type Msg
-    = Click
-    | NoOp
+    = OnDragEnd MapBounds
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update message model =
     case message of
-        Click ->
-            ( { model | message = "clicked" }, Cmd.none )
-
-        NoOp ->
+        OnDragEnd detail ->
+            let
+                _ =
+                    Debug.log "detail" <| Debug.toString detail
+            in
             ( model, Cmd.none )
+
+
+type alias MapBounds =
+    { north : Float
+    , east : Float
+    , south : Float
+    , west : Float
+    }
+
+
+decodeEventDetails : Decoder MapBounds
+decodeEventDetails =
+    Decode.map4 MapBounds
+        (Decode.field "north" Decode.float)
+        (Decode.field "east" Decode.float)
+        (Decode.field "south" Decode.float)
+        (Decode.field "west" Decode.float)
 
 
 
@@ -70,17 +91,27 @@ update message model =
 
 view : Model -> List (Html Msg)
 view model =
-    [ div [ class "button" ] [ button [ onClick Click ] [ text "Click me" ] ]
-    , div [ class "message" ] [ text model.message ]
-    , gmap
+    [ gmap model
     ]
 
 
-gmap =
+gmap : Model -> Html Msg
+gmap model =
     Html.node "google-map"
-        [ Attribute.attribute "api-key" "AIzaSyDPGdhFftpVU-QW4ihbXi6IuLw1DUriYJ0"
-        , Attribute.attribute "latitude" "52"
-        , Attribute.attribute "longitude" "5"
+        [ Attribute.attribute "api-key" model.gkey
+        , Attribute.attribute "latitude" <| String.fromFloat model.center.lat
+        , Attribute.attribute "longitude" <| String.fromFloat model.center.lng
+        , Attribute.attribute "drag-events" "true"
+        , Events.on "google-map-dragend" (Decode.at [ "detail", "bounds" ] decodeEventDetails |> Decode.map OnDragEnd)
+        ]
+        [ gmarker model.center ]
+
+
+gmarker : LatLng -> Html msg
+gmarker { lat, lng } =
+    Html.node "google-map-marker"
+        [ Attribute.attribute "latitude" <| String.fromFloat lat
+        , Attribute.attribute "longitude" <| String.fromFloat lng
         ]
         []
 
@@ -91,9 +122,9 @@ gmap =
 -- ---------------------------
 
 
-main : Program Int Model Msg
+main : Program String Model Msg
 main =
-    Browser.application
+    Browser.document
         { init = init
         , update = update
         , view =
@@ -102,6 +133,4 @@ main =
                 , body = view m
                 }
         , subscriptions = \_ -> Sub.none
-        , onUrlChange = \_ -> NoOp
-        , onUrlRequest = \_ -> NoOp
         }

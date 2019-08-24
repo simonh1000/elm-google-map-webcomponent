@@ -6,7 +6,6 @@ require("./styles.scss");
 import * as map from "./assets/@em-polymer/google-map/google-map";
 //import * as marker from "@em-polymer/google-map/google-map-marker";
 
-
 const {Elm} = require('./Main');
-var app = Elm.Main.init({flags: 6});
+var app = Elm.Main.init({flags: process.env.GKEY});
 

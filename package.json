@@ -45,6 +45,8 @@
     },
     "dependencies": {
         "@em-polymer/google-map": "^3.0.0-pre.5",
+        "dotenv": "^8.1.0",
+        "dotenv-webpack": "^1.7.0",
         "purecss": "^1.0.1"
     },
     "prettier": {

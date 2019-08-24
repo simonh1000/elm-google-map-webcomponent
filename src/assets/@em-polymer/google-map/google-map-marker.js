@@ -1,4 +1,8 @@
 import { Polymer } from '@polymer/polymer/lib/legacy/polymer-fn.js';
+// added by Simon
+import {
+  html
+} from '@polymer/polymer/lib/utils/html-tag'
 
 function setupDragHandler_() {
   if (this.draggable) {
@@ -15,7 +19,7 @@ function onDragEnd_(e, details, sender) {
 }
 
 Polymer({
-  _template: `
+  _template: html`
     <style>
       :host {
         display: none;
@@ -268,7 +272,7 @@ Polymer({
   },
 
   _clickEventsChanged() {
-    if (this.map) {
+    if (this.marker) {
       if (this.clickEvents) {
         this._forwardEvent('click');
         this._forwardEvent('dblclick');
@@ -282,7 +286,7 @@ Polymer({
   },
 
   _dragEventsChanged() {
-    if (this.map) {
+    if (this.marker) {
       if (this.dragEvents) {
         this._forwardEvent('drag');
         this._forwardEvent('dragend');
@@ -296,7 +300,7 @@ Polymer({
   },
 
   _mouseEventsChanged() {
-    if (this.map) {
+    if (this.marker) {
       if (this.mouseEvents) {
         this._forwardEvent('mousedown');
         this._forwardEvent('mousemove');

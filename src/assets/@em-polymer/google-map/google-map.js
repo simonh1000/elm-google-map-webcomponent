@@ -1,10 +1,16 @@
-import { Polymer } from '@polymer/polymer/lib/legacy/polymer-fn.js';
-import { IronResizableBehavior } from '@polymer/iron-resizable-behavior/iron-resizable-behavior.js';
+import {
+  Polymer
+} from '@polymer/polymer/lib/legacy/polymer-fn.js';
+import {
+  IronResizableBehavior
+} from '@polymer/iron-resizable-behavior/iron-resizable-behavior.js';
 import '../google-apis/google-maps-api.js';
 import './google-map-marker.js';
 
 // added by Simon
-import {html} from '@polymer/polymer/lib/utils/html-tag'
+import {
+  html
+} from '@polymer/polymer/lib/utils/html-tag'
 
 /* Copyright (c) 2015 Google Inc. All rights reserved. */
 /**
@@ -64,7 +70,7 @@ If you're seeing the message "You have included the Google Maps API multiple tim
 // Simon: _template: ` -> _template: html`
 
 Polymer({
-  _template: html`
+  _template: html `
     <style>
       :host {
         position: relative;
@@ -319,7 +325,9 @@ Polymer({
      */
     styles: {
       type: Object,
-      value() { return {}; },
+      value() {
+        return {};
+      },
     },
 
     /**
@@ -408,7 +416,9 @@ Polymer({
      */
     additionalMapOptions: {
       type: Object,
-      value() { return {}; },
+      value() {
+        return {};
+      },
     },
 
     /**
@@ -416,7 +426,9 @@ Polymer({
      */
     markers: {
       type: Array,
-      value() { return []; },
+      value() {
+        return [];
+      },
       readOnly: true,
     },
 
@@ -425,7 +437,9 @@ Polymer({
      */
     objects: {
       type: Array,
-      value() { return []; },
+      value() {
+        return [];
+      },
       readOnly: true,
     },
 
@@ -510,7 +524,9 @@ Polymer({
     if (this.getAttribute('draggable') != null) {
       mapOptions.draggable = this.draggable;
     }
-    for (const p in this.additionalMapOptions) { mapOptions[p] = this.additionalMapOptions[p]; }
+    for (const p in this.additionalMapOptions) {
+      mapOptions[p] = this.additionalMapOptions[p];
+    }
 
     return mapOptions;
   },
@@ -533,7 +549,9 @@ Polymer({
   },
 
   _updateMarkers() {
-    const newMarkers = Array.prototype.slice.call(this.$.markers.assignedNodes({ flatten: true }));
+    const newMarkers = Array.prototype.slice.call(this.$.markers.assignedNodes({
+      flatten: true
+    }));
 
     // do not recompute if markers have not been added or removed
     if (newMarkers.length === this.markers.length) {
@@ -570,7 +588,9 @@ Polymer({
   },
 
   _updateObjects() {
-    const newObjects = Array.prototype.slice.call(this.$.objects.assignedNodes({ flatten: true }));
+    const newObjects = Array.prototype.slice.call(this.$.objects.assignedNodes({
+      flatten: true
+    }));
 
     // Do not recompute if objects have not been added or removed.
     if (newObjects.length === this.objects.length) {
@@ -734,13 +754,17 @@ Polymer({
 
   _maxZoomChanged() {
     if (this.map) {
-      this.map.setOptions({ maxZoom: Number(this.maxZoom) });
+      this.map.setOptions({
+        maxZoom: Number(this.maxZoom)
+      });
     }
   },
 
   _minZoomChanged() {
     if (this.map) {
-      this.map.setOptions({ minZoom: Number(this.minZoom) });
+      this.map.setOptions({
+        minZoom: Number(this.minZoom)
+      });
     }
   },
 
@@ -754,21 +778,27 @@ Polymer({
     if (!this.map) {
       return;
     }
-    this.map.setOptions({ disableDefaultUI: this.disableDefaultUi });
+    this.map.setOptions({
+      disableDefaultUI: this.disableDefaultUi
+    });
   },
 
   _disableMapTypeControlChanged() {
     if (!this.map) {
       return;
     }
-    this.map.setOptions({ mapTypeControl: !this.disableMapTypeControl });
+    this.map.setOptions({
+      mapTypeControl: !this.disableMapTypeControl
+    });
   },
 
   _disableStreetViewControlChanged() {
     if (!this.map) {
       return;
     }
-    this.map.setOptions({ streetViewControl: !this.disableStreetViewControl });
+    this.map.setOptions({
+      streetViewControl: !this.disableStreetViewControl
+    });
   },
 
   _disableZoomChanged() {
@@ -788,7 +818,9 @@ Polymer({
     // Cannot use *Changed watchers for native properties.
     switch (attrName) {
       case 'draggable':
-        this.map.setOptions({ draggable: this.draggable });
+        this.map.setOptions({
+          draggable: this.draggable
+        });
         break;
     }
   },
@@ -842,7 +874,13 @@ Polymer({
 
   _forwardEvent(name) {
     this._listeners[name] = google.maps.event.addListener(this.map, name, (event) => {
-      this.fire(`google-map-${name}`, event);
+      let bounds = this.map.getBounds().toJSON();
+      let center = this.map.getCenter().toJSON();
+
+      this.fire(`google-map-${name}`, {
+        center,
+        bounds
+      });
     });
   },
 

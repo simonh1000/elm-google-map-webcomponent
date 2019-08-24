@@ -5,9 +5,13 @@ const elmMinify = require("elm-minify");
 
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const HTMLWebpackPlugin = require("html-webpack-plugin");
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const {
+    CleanWebpackPlugin
+} = require('clean-webpack-plugin');
 // to extract the css as a separate file
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+
+const Dotenv = require('dotenv-webpack');
 
 var MODE =
     process.env.npm_lifecycle_event === "prod" ? "production" : "development";
@@ -31,6 +35,9 @@ var common = {
             template: "src/index.html",
             // inject details of output file at end of body
             inject: "body"
+        }),
+        new Dotenv({
+            path: path.resolve(__dirname, './.env')
         })
     ],
     resolve: {
@@ -38,8 +45,7 @@ var common = {
         extensions: [".js", ".elm", ".scss", ".png"]
     },
     module: {
-        rules: [
-            {
+        rules: [{
                 test: /\.js$/,
                 exclude: /node_modules/,
                 use: {
@@ -89,24 +95,23 @@ if (MODE === "development") {
             new webpack.NoEmitOnErrorsPlugin()
         ],
         module: {
-            rules: [
-                {
-                    test: /\.elm$/,
-                    exclude: [/elm-stuff/, /node_modules/],
-                    use: [
-                        { loader: "elm-hot-webpack-loader" },
-                        {
-                            loader: "elm-webpack-loader",
-                            options: {
-                                // add Elm's debug overlay to output
-                                debug: withDebug,
-                                //
-                                forceWatch: true
-                            }
+            rules: [{
+                test: /\.elm$/,
+                exclude: [/elm-stuff/, /node_modules/],
+                use: [{
+                        loader: "elm-hot-webpack-loader"
+                    },
+                    {
+                        loader: "elm-webpack-loader",
+                        options: {
+                            // add Elm's debug overlay to output
+                            debug: withDebug,
+                            //
+                            forceWatch: true
                         }
-                    ]
-                }
-            ]
+                    }
+                ]
+            }]
         },
         devServer: {
             inline: true,
@@ -116,8 +121,10 @@ if (MODE === "development") {
             // feel free to delete this section if you don't need anything like this
             before(app) {
                 // on port 3000
-                app.get("/test", function(req, res) {
-                    res.json({ result: "OK" });
+                app.get("/test", function (req, res) {
+                    res.json({
+                        result: "OK"
+                    });
                 });
             }
         }
@@ -136,11 +143,9 @@ if (MODE === "production") {
             // Minify elm code
             new elmMinify.WebpackPlugin(),
             // Copy static assets
-            new CopyWebpackPlugin([
-                {
-                    from: "src/assets"
-                }
-            ]),
+            new CopyWebpackPlugin([{
+                from: "src/assets"
+            }]),
             new MiniCssExtractPlugin({
                 // Options similar to the same options in webpackOptions.output
                 // both options are optional
@@ -148,8 +153,7 @@ if (MODE === "production") {
             })
         ],
         module: {
-            rules: [
-                {
+            rules: [{
                     test: /\.elm$/,
                     exclude: [/elm-stuff/, /node_modules/],
                     use: {
