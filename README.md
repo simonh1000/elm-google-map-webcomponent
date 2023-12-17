@@ -1,22 +1,22 @@
-# Elm Google Maps with web component
+# Google Map Web Component to work with Elm
 
-```bash
-npm install
-npm run dev
-```
-//npm i @em-polymer/google-map
-import * as map from "./assets/@em-polymer/google-map/google-map";
-//import * as marker from "@em-polymer/google-map/google-map-marker";
+Simple Google Map webcomponent with clickable markers.
 
-open localhost:3000
+## Params
 
-
-```
-npm i @em-polymer/google-map
-
+```html
+<map-icon
+  api-key="abc123"
+  center='{"lat":39.47228,"lng":-0.364284}'
+  zoom="14"
+  options='{"mapTypeId": "satellite"}'
+  markers='[{"meta": "itemX", "position": {"lat":39.47228,"lng":-0.364284}}]'
+/>
 ```
 
-copy em-polymer to /src/assets
+`markers` needs to be a list of objects with a `position` field in. On click, the entire object is returned so you can know which one was clicked.
 
-edit /src/assets/@em-polymer/google-map/google-map.js and add `html` ( see comments)
-https://github.com/GoogleWebComponents/google-map/pull/397/files#diff-3df3a2c83cdee5d2b2cbfab6208ba2b4
+## Development
+
+- `npm run dev` - starts vite dev server with elm debugger
+- `npm run start` - starts vite dev server without elm debugger

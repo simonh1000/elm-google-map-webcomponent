@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>map-icon test harness</title>
+    <script type="module" src="./src/map-icon.js"></script>
+    <style>
+      map-icon {
+        display: block;
+        width: 500px;
+        height: 400px;
+      }
+    </style>
+  </head>
+  <body>
+    <map-icon
+      api-key="%VITE_GAPI_KEY%"
+      center='{"lat":39.47,"lng":-0.36}'
+      zoom="14"
+      options='{"mapTypeId": "satellite"}'
+    ></map-icon>
+
+    <script>
+      const map = document.querySelector("map-icon");
+      let markers = [
+        {
+          meta: "marker1",
+          position: { lat: 39.47, lng: -0.36 },
+        },
+      ];
+      map.setAttribute("markers", JSON.stringify(markers));
+
+      map.addEventListener("markerClicked", (evt) => console.log(evt.detail));
+    </script>
+  </body>
+</html>
